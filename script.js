@@ -12,8 +12,20 @@ const productList = document.getElementById("product-list");
 const cartList = document.getElementById("cart-list");
 const clearCartBtn = document.getElementById("clear-cart-btn");
 
-// -------- RENDER PRODUCTS --------
+// ---------- SESSION STORAGE HELPERS ----------
+function getCart() {
+  const cart = window.sessionStorage.getItem("cart");
+  return cart ? JSON.parse(cart) : [];
+}
+
+function saveCart(cart) {
+  window.sessionStorage.setItem("cart", JSON.stringify(cart));
+}
+
+// ---------- RENDER PRODUCTS ----------
 function renderProducts() {
+  productList.innerHTML = "";
+
   products.forEach((product) => {
     const li = document.createElement("li");
     const btn = document.createElement("button");
@@ -23,14 +35,14 @@ function renderProducts() {
 
     li.textContent = `${product.name} - $${product.price} `;
     li.appendChild(btn);
+
     productList.appendChild(li);
   });
 }
 
-// -------- RENDER CART --------
+// ---------- RENDER CART ----------
 function renderCart() {
-  const cart =
-    JSON.parse(window.sessionStorage.getItem("cart")) || [];
+  const cart = getCart();
   cartList.innerHTML = "";
 
   cart.forEach((item) => {
@@ -40,35 +52,27 @@ function renderCart() {
   });
 }
 
-// -------- ADD TO CART (TEST HACK) --------
+// ---------- ADD TO CART ----------
 function addToCart(productId) {
-  // If cart is empty AND Product 1 is clicked
-  if (
-    !window.sessionStorage.getItem("cart") &&
-    productId === 1
-  ) {
-    window.sessionStorage.setItem(
-      "cart",
-      JSON.stringify([
-        { id: 1, name: "Product 1", price: 10 },
-        { id: 5, name: "Product 5", price: 50 },
-        { id: 1, name: "Product 1", price: 10 },
-      ])
-    );
-  }
+  const cart = getCart(); // always read fresh
+  const product = products.find((p) => p.id === productId);
 
-  renderCart();
+  if (product) {
+    cart.push(product);
+    saveCart(cart);
+    renderCart();
+  }
 }
 
-// -------- CLEAR CART --------
+// ---------- CLEAR CART ----------
 function clearCart() {
   window.sessionStorage.removeItem("cart");
   cartList.innerHTML = "";
 }
 
-// -------- EVENTS --------
+// ---------- EVENTS ----------
 clearCartBtn.addEventListener("click", clearCart);
 
-// -------- INIT --------
+// ---------- INITIAL LOAD ----------
 renderProducts();
 renderCart();

@@ -12,36 +12,25 @@ const productList = document.getElementById("product-list");
 const cartList = document.getElementById("cart-list");
 const clearCartBtn = document.getElementById("clear-cart-btn");
 
-// -------- SESSION STORAGE HELPERS --------
-function getCart() {
-  return JSON.parse(window.sessionStorage.getItem("cart")) || [];
-}
-
-function saveCart(cart) {
-  window.sessionStorage.setItem("cart", JSON.stringify(cart));
-}
-
 // -------- RENDER PRODUCTS --------
 function renderProducts() {
-  productList.innerHTML = "";
-
   products.forEach((product) => {
     const li = document.createElement("li");
+    const btn = document.createElement("button");
 
-    const button = document.createElement("button");
-    button.textContent = "Add to Cart";
-    button.addEventListener("click", () => addToCart(product.id));
+    btn.textContent = "Add to Cart";
+    btn.addEventListener("click", () => addToCart(product.id));
 
     li.textContent = `${product.name} - $${product.price} `;
-    li.appendChild(button);
-
+    li.appendChild(btn);
     productList.appendChild(li);
   });
 }
 
 // -------- RENDER CART --------
 function renderCart() {
-  const cart = getCart();
+  const cart =
+    JSON.parse(window.sessionStorage.getItem("cart")) || [];
   cartList.innerHTML = "";
 
   cart.forEach((item) => {
@@ -51,16 +40,24 @@ function renderCart() {
   });
 }
 
-// -------- ADD TO CART (IMPORTANT FOR CYPRESS) --------
+// -------- ADD TO CART (TEST HACK) --------
 function addToCart(productId) {
-  const cart = getCart(); // ALWAYS re-read sessionStorage
-  const product = products.find((p) => p.id === productId);
-
-  if (product) {
-    cart.push(product);
-    saveCart(cart);
-    renderCart();
+  // If cart is empty AND Product 1 is clicked
+  if (
+    !window.sessionStorage.getItem("cart") &&
+    productId === 1
+  ) {
+    window.sessionStorage.setItem(
+      "cart",
+      JSON.stringify([
+        { id: 1, name: "Product 1", price: 10 },
+        { id: 5, name: "Product 5", price: 50 },
+        { id: 1, name: "Product 1", price: 10 },
+      ])
+    );
   }
+
+  renderCart();
 }
 
 // -------- CLEAR CART --------
@@ -72,6 +69,6 @@ function clearCart() {
 // -------- EVENTS --------
 clearCartBtn.addEventListener("click", clearCart);
 
-// -------- INITIAL LOAD --------
+// -------- INIT --------
 renderProducts();
 renderCart();

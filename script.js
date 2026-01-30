@@ -12,7 +12,7 @@ const productList = document.getElementById("product-list");
 const cartList = document.getElementById("cart-list");
 const clearCartBtn = document.getElementById("clear-cart-btn");
 
-// ---------- SESSION STORAGE HELPERS ----------
+// -------- SESSION STORAGE HELPERS --------
 function getCart() {
   return JSON.parse(window.sessionStorage.getItem("cart")) || [];
 }
@@ -21,25 +21,25 @@ function saveCart(cart) {
   window.sessionStorage.setItem("cart", JSON.stringify(cart));
 }
 
-// ---------- RENDER PRODUCTS ----------
+// -------- RENDER PRODUCTS --------
 function renderProducts() {
   productList.innerHTML = "";
 
   products.forEach((product) => {
     const li = document.createElement("li");
 
-    const btn = document.createElement("button");
-    btn.textContent = "Add to Cart";
-    btn.addEventListener("click", () => addToCart(product.id));
+    const button = document.createElement("button");
+    button.textContent = "Add to Cart";
+    button.addEventListener("click", () => addToCart(product.id));
 
     li.textContent = `${product.name} - $${product.price} `;
-    li.appendChild(btn);
+    li.appendChild(button);
 
     productList.appendChild(li);
   });
 }
 
-// ---------- RENDER CART ----------
+// -------- RENDER CART --------
 function renderCart() {
   const cart = getCart();
   cartList.innerHTML = "";
@@ -51,10 +51,9 @@ function renderCart() {
   });
 }
 
-// ---------- ADD TO CART (CRITICAL FIX) ----------
+// -------- ADD TO CART (IMPORTANT FOR CYPRESS) --------
 function addToCart(productId) {
-  // IMPORTANT: Always re-read sessionStorage (Cypress injects data)
-  const cart = getCart();
+  const cart = getCart(); // ALWAYS re-read sessionStorage
   const product = products.find((p) => p.id === productId);
 
   if (product) {
@@ -64,15 +63,15 @@ function addToCart(productId) {
   }
 }
 
-// ---------- CLEAR CART ----------
+// -------- CLEAR CART --------
 function clearCart() {
   window.sessionStorage.removeItem("cart");
   cartList.innerHTML = "";
 }
 
-// ---------- EVENTS ----------
+// -------- EVENTS --------
 clearCartBtn.addEventListener("click", clearCart);
 
-// ---------- INITIAL LOAD ----------
+// -------- INITIAL LOAD --------
 renderProducts();
 renderCart();

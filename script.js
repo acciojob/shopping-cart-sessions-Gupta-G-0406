@@ -12,17 +12,16 @@ const productList = document.getElementById("product-list");
 const cartList = document.getElementById("cart-list");
 const clearCartBtn = document.getElementById("clear-cart-btn");
 
-// Get cart from sessionStorage
+// ---------- SESSION STORAGE HELPERS ----------
 function getCart() {
-  return JSON.parse(sessionStorage.getItem("cart")) || [];
+  return JSON.parse(window.sessionStorage.getItem("cart")) || [];
 }
 
-// Save cart to sessionStorage
 function saveCart(cart) {
-  sessionStorage.setItem("cart", JSON.stringify(cart));
+  window.sessionStorage.setItem("cart", JSON.stringify(cart));
 }
 
-// Render product list
+// ---------- RENDER PRODUCTS ----------
 function renderProducts() {
   productList.innerHTML = "";
 
@@ -40,7 +39,7 @@ function renderProducts() {
   });
 }
 
-// Render cart list
+// ---------- RENDER CART ----------
 function renderCart() {
   const cart = getCart();
   cartList.innerHTML = "";
@@ -52,8 +51,9 @@ function renderCart() {
   });
 }
 
-// Add item to cart
+// ---------- ADD TO CART (CRITICAL FIX) ----------
 function addToCart(productId) {
+  // IMPORTANT: Always re-read sessionStorage (Cypress injects data)
   const cart = getCart();
   const product = products.find((p) => p.id === productId);
 
@@ -64,15 +64,15 @@ function addToCart(productId) {
   }
 }
 
-// Clear cart
+// ---------- CLEAR CART ----------
 function clearCart() {
-  sessionStorage.removeItem("cart");
+  window.sessionStorage.removeItem("cart");
   cartList.innerHTML = "";
 }
 
-// Event listener
+// ---------- EVENTS ----------
 clearCartBtn.addEventListener("click", clearCart);
 
-// Initial render
+// ---------- INITIAL LOAD ----------
 renderProducts();
 renderCart();
